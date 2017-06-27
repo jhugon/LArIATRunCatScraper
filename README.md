@@ -26,7 +26,7 @@ run, subrun, event
 One line per each event that passes your cuts
 </li>
 <li> Run
- > python.py <input.csv>
+ > python.py ScanPage.py <input.csv>
 </li>
 </ol>
 
