@@ -22,7 +22,11 @@ What does this package contain?
 <li> Whatever your favorite way of doing an analysis in LArIAT is, make your analyzer spit out a text file in the following format:
 </br>
 run, subrun, event
+</br>
+One line per each event that passes your cuts
 </li>
-
+<li> Run
+ > python.py <input.csv>
+</li>
 </ol>
 
