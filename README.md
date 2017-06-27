@@ -16,6 +16,9 @@ What does this package contain?
 <b> So, I'm done with my analysis and want to know which portion of my data comes from which run condition... what do I need?</b>
 
 <ol>
-Whatever your favorite way of doing an analysis in LArIAT is, make a text file 
+Whatever your favorite way of doing an analysis in LArIAT is, make a text file in the following format:
+</br>
+run, subrun, event
+
 </ol>
 
