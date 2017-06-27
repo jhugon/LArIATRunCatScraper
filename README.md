@@ -32,3 +32,8 @@ One line per each event that passes your cuts
 </li>
 </ol>
 
+<b> What do I get after running this script?</b>
+<ol> 
+2 files containing the same information (1 csv, 1 rootfile with TTree) </br>
+runNumber, number of files for that run, magnet polarity, magnet current, secondary energy
+</ol>
