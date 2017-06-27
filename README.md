@@ -17,6 +17,7 @@ What does this package contain?
 
 <ol>
 <li> Download this package. And you can do so by 
+</br>
  > git clone  https://github.com/ElenaGramellini/LArIATRunCatScraper
 </li>
 <li> Whatever your favorite way of doing an analysis in LArIAT is, make your analyzer spit out a text file in the following format:
@@ -26,6 +27,7 @@ run, subrun, event
 One line per each event that passes your cuts
 </li>
 <li> Run
+</br>
  > python.py ScanPage.py input.csv
 </li>
 </ol>
