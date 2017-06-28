@@ -15,10 +15,11 @@
 #
 # To Do
 # [ x ] read input file
+# [   ] read input as ttree file
 # [   ] from input file figure how many events per run
 # [ x ] consultRunCat: 
 #       take as a input the runNumber, output the polarity, current and energy 
-# [   ] write csv output
+# [ x ] write csv output
 
 """@Package docstring
 Scope of this python script: 
@@ -40,6 +41,7 @@ Output: csv file whose column are run, N event for that run, magnet polarity, ma
 # But, you know, just in case
 import re, requests, json, csv, argparse
 from collections import defaultdict
+import ROOT
 from ROOT import TFile, TTree
 from array import array
  
@@ -95,14 +97,28 @@ args    = parser.parse_args()
 fname   = args.fname
 outName = args.outName
 
+
+
 # First things first:
 # read the input file
 my_dict = defaultdict(int)
-with open(fname) as f:
-    for fLine in f.readlines():
-        w = fLine.split(",")
-        runIn    = int(w[0])
+if (fname.find(".root") != -1):
+    print "Ok, you gave me a root file! "
+    rFile = ROOT.TFile(fname)
+    rTree = rFile.Get('anatree/anatree')
+
+    for entry in range(rTree.GetEntries()):
+        rTree.GetEntry(entry)
+        runIn    = int(rTree.run)
         my_dict[runIn] += 1
+
+else:
+    print "Ok, you didn't give me a root file, hopefully this is a csv "
+    with open(fname) as f:
+        for fLine in f.readlines():
+            w = fLine.split(",")
+            runIn    = int(w[0])
+            my_dict[runIn] += 1
 
 
 # Store this info in a csv and in a ROOT TTree
