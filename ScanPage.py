@@ -63,24 +63,38 @@ def consultRunCat( runNumber ):
     currentIn  = 0.
     energyIn   = 0.
     # Check if tags are contained in each line
-    # careful about the fact that 
     # the tag "mid_f_mc7an" is contained in "mid_f_mc7anb" 
     for line in text:
         if line.find(currentIn_tag) != -1:
             if line.find(polarityIn_tag) != -1:
                 w = line.split("</TD>")
-                polarityIn = float(w[2].replace("<TD>", ""))
-                if polarityIn > 0:
-                    polarityIn = 1.
-                else: 
-                    polarityIn = -1.
+                try:    
+                    polarityIn = float(w[2].replace("<TD>", ""))
+                    if polarityIn > 0:
+                        polarityIn = 1.
+                    else: 
+                        polarityIn = -1.                
+                except ValueError:
+                    energyIn   = 0
+                    polarityIn = 0
+                    currentIn  = 0
             else:
                 w = line.split("</TD>")
-                currentIn =  float(w[2].replace("<TD>", ""))
-                
+                try:
+                    currentIn = float(w[2].replace("<TD>", ""))
+                except ValueError:
+                    energyIn   = 0
+                    polarityIn = 0
+                    currentIn  = 0
         if line.find(energyIn_tag) != -1:
             w = line.split("</TD>")
-            energyIn = float(w[2].replace("<TD>", ""))
+            print runNumber
+            try:
+                energyIn = float(w[2].replace("<TD>", ""))
+            except ValueError:
+                energyIn   = 0
+                polarityIn = 0
+                currentIn  = 0
     # Return your the run conditions
     # In case run not found, the values will be 0, 0, 0
     return  (polarityIn, currentIn, energyIn)
@@ -92,7 +106,7 @@ def consultRunCat( runNumber ):
 # the name of the input csv file
 parser = argparse.ArgumentParser()
 parser.add_argument("fname"   , nargs='?', default = 'test.csv', type = str, help="insert fileName")
-parser.add_argument("outName" , nargs='?', default = 'puppa'   , type = str, help="insert fileName")
+parser.add_argument("outName" , nargs='?', default = 'beamConditions.root'   , type = str, help="insert fileName")
 args    = parser.parse_args()
 fname   = args.fname
 outName = args.outName
