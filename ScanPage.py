@@ -106,7 +106,7 @@ def consultRunCat( runNumber ):
 # the name of the input csv file
 parser = argparse.ArgumentParser()
 parser.add_argument("fname"   , nargs='?', default = 'test.csv', type = str, help="insert fileName")
-parser.add_argument("outName" , nargs='?', default = 'beamConditions.root'   , type = str, help="insert fileName")
+parser.add_argument("outName" , nargs='?', default = 'beamConditions'   , type = str, help="insert fileName")
 args    = parser.parse_args()
 fname   = args.fname
 outName = args.outName
