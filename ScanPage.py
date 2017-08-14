@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Copyright (C) 2017-2017 Elena Gramellini <elena.gramellini@yale.edu>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -36,16 +37,8 @@ Input:  csv file whose column are run, subrun, event
 Output: csv file whose column are run, N event for that run, magnet polarity, magnet current, secondary beam energy  
 """   
 
-# Some reduntant import. 
-# We probably use only requests, collections, ROOT and array
-# But, you know, just in case
 import re, requests, json, csv, argparse
 from collections import defaultdict
-import ROOT
-from ROOT import TFile, TTree
-from array import array
- 
-
 
 # Then consult the runCatalog
 def consultRunCat( runNumber ):
@@ -88,91 +81,18 @@ def consultRunCat( runNumber ):
                     currentIn  = 0
         if line.find(energyIn_tag) != -1:
             w = line.split("</TD>")
-            print runNumber
+            #print runNumber
             try:
-                energyIn = float(w[2].replace("<TD>", ""))
+                energyIn = float(w[3].replace("<TD>", ""))
             except ValueError:
                 energyIn   = 0
                 polarityIn = 0
                 currentIn  = 0
     # Return your the run conditions
     # In case run not found, the values will be 0, 0, 0
-    return  (polarityIn, currentIn, energyIn)
+    return  (runNumber,polarityIn, currentIn, energyIn)
 
-
-
-
-# This code takes as an argument 
-# the name of the input csv file
-parser = argparse.ArgumentParser()
-parser.add_argument("fname"   , nargs='?', default = 'test.csv', type = str, help="insert fileName")
-parser.add_argument("outName" , nargs='?', default = 'beamConditions'   , type = str, help="insert fileName")
-args    = parser.parse_args()
-fname   = args.fname
-outName = args.outName
-
-
-
-# First things first:
-# read the input file
-my_dict = defaultdict(int)
-if (fname.find(".root") != -1):
-    print "Ok, you gave me a root file! "
-    rFile = ROOT.TFile(fname)
-    rTree = rFile.Get('anatree/anatree')
-
-    for entry in range(rTree.GetEntries()):
-        rTree.GetEntry(entry)
-        runIn    = int(rTree.run)
-        my_dict[runIn] += 1
-
-else:
-    print "Ok, you didn't give me a root file, hopefully this is a csv "
-    with open(fname) as f:
-        for fLine in f.readlines():
-            w = fLine.split(",")
-            runIn    = int(w[0])
-            my_dict[runIn] += 1
-
-
-# Store this info in a csv and in a ROOT TTree
-# Define TFile and TTree
-# The TTree has 1 enrty per run
-f = TFile( outName+".root", 'recreate' )
-t = TTree( 'RunConditionsTTree', 'tree' )
-
-# Define TTree Branches
-run      = array( 'i', [ 0 ] )  # Run Number 
-nevents  = array( 'i', [ 0 ] )  # Number of events in that run
-polarity = array( 'f', [ 0 ] )  # Magnet polarity fo that run
-current  = array( 'f', [ 0 ] )  # Magnet current for that run
-energy   = array( 'f', [ 0 ] )  # Secondary beam energy for that run
-t.Branch( 'run'     ,run     , 'run/I'     )
-t.Branch( 'nevents' ,nevents , 'nevents/I' )
-t.Branch( 'polarity',polarity, 'polarity/F')
-t.Branch( 'current' ,current , 'current/F' )
-t.Branch( 'energy'  ,energy  , 'energy/F'  )
-
-# Open your out csv file and loop on the dictionary
-stupidCounter = 0
-with open(outName+".csv","w") as target:
-    for k,v in my_dict.items():
-        stupidCounter+=1
-        if not stupidCounter % 10000.:
-            print "Run count: ", stupidCounter 
-        # This is where the magic happens 
-        # (call the consultRunCat function and store results)
-        tupla = consultRunCat(k)
-        outline =  str(k)+","+str(v)+","+str(tupla[0])+","+str(tupla[1])+","+str(tupla[2])+"\n"
-        # write output
-        target.write(outline)
-        # Fill TTree branches
-        run[0]      =  k      
-        nevents[0]  =  v
-        polarity[0] =  tupla[0]
-        current[0]  =  tupla[1]
-        energy[0]   =  tupla[2]
-        t.Fill()
- 
-f.Write()
-f.Close()
+with open("RunII_info.txt",'w') as outfile:
+  for run in range(8000,10227):
+  #for run in [8000,10227]:
+    outfile.write("{} {} {} {}\n".format(*consultRunCat(run)))
